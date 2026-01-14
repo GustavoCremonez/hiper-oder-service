@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Hiper.API/Hiper.API.csproj" />
+    <Project Path="src/Hiper.Application/Hiper.Application.csproj" />
+    <Project Path="src/Hiper.Domain/Hiper.Domain.csproj" />
+    <Project Path="src/Hiper.Infrastructure/Hiper.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Hiper.UnitTests/Hiper.UnitTests.csproj" />
+  </Folder>
+</Solution>

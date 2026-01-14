@@ -1,0 +1,6 @@
+@Hiper.API_HostAddress = http://localhost:5230
+
+GET {{Hiper.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
