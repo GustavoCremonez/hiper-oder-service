@@ -32,7 +32,7 @@ public class OrderCreatedConsumer : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(5000, stoppingToken);
+        await Task.Delay(15000, stoppingToken);
 
         var factory = new ConnectionFactory
         {

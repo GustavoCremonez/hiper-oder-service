@@ -15,7 +15,9 @@
       "Bash(xargs git rm --cached)",
       "Bash(git rebase:*)",
       "Bash(docker-compose up:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(docker-compose build:*)",
+      "Bash(docker-compose logs:*)"
     ]
   }
 }
