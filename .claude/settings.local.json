@@ -13,7 +13,9 @@
       "Bash(git filter-branch:*)",
       "Bash(git reset:*)",
       "Bash(xargs git rm --cached)",
-      "Bash(git rebase:*)"
+      "Bash(git rebase:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(find:*)"
     ]
   }
 }
