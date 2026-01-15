@@ -53,7 +53,8 @@ src/
 ### Com Docker (Recomendado)
 
 ```bash
-# Subir todos os serviços
+# Subir backend (API + PostgreSQL + RabbitMQ)
+cd hiper-oder-service
 docker-compose up -d
 
 # Ver logs
@@ -63,10 +64,20 @@ docker-compose logs -f api
 docker-compose down
 ```
 
-### Localmente (Desenvolvimento)
+### Frontend (Localmente)
 
 ```bash
-# Backend
+cd hiper-web
+npm install
+npm run dev
+```
+
+### Backend Localmente (Desenvolvimento)
+
+```bash
+cd hiper-oder-service
+
+# Executar API
 dotnet run --project src/Hiper.API
 
 # Executar testes
@@ -75,6 +86,7 @@ dotnet test
 
 ## Acessos
 
+- **Frontend**: http://localhost:5173
 - **API**: http://localhost:5000
 - **Swagger**: http://localhost:5000/swagger
 - **RabbitMQ Management**: http://localhost:15672 (guest/guest)
