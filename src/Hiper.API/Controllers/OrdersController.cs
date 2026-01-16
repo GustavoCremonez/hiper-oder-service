@@ -1,3 +1,4 @@
+using Hiper.API.Models;
 using Hiper.Application.UseCases.CancelOrder;
 using Hiper.Application.UseCases.CreateOrder;
 using Hiper.Application.UseCases.GetOrderById;
@@ -8,8 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hiper.API.Controllers;
 
+/// <summary>
+/// Controller responsável pelo gerenciamento de pedidos
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json")]
 public class OrdersController : ControllerBase
 {
     private readonly CreateOrderHandler _createOrderHandler;
@@ -32,7 +37,16 @@ public class OrdersController : ControllerBase
         _cancelOrderHandler = cancelOrderHandler;
     }
 
+    /// <summary>
+    /// Cria um novo pedido
+    /// </summary>
+    /// <param name="command">Dados do pedido a ser criado</param>
+    /// <returns>Pedido criado com status Pending</returns>
+    /// <response code="201">Pedido criado com sucesso</response>
+    /// <response code="400">Dados inválidos ou erro de validação</response>
     [HttpPost]
+    [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderCommand command)
     {
         var result = await _createOrderHandler.HandleAsync(command);
@@ -45,14 +59,31 @@ public class OrdersController : ControllerBase
         return CreatedAtAction(nameof(GetOrderById), new { id = result.Value }, orderResult.Value);
     }
 
+    /// <summary>
+    /// Retorna lista paginada de pedidos
+    /// </summary>
+    /// <param name="page">Número da página (padrão: 1)</param>
+    /// <param name="pageSize">Tamanho da página (padrão: 10)</param>
+    /// <returns>Lista paginada de pedidos ordenados por data de criação</returns>
+    /// <response code="200">Lista de pedidos retornada com sucesso</response>
     [HttpGet]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetOrders([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var result = await _getOrdersHandler.HandleAsync(new GetOrdersQuery(page, pageSize));
         return Ok(result);
     }
 
+    /// <summary>
+    /// Busca um pedido específico por ID
+    /// </summary>
+    /// <param name="id">ID do pedido</param>
+    /// <returns>Dados completos do pedido</returns>
+    /// <response code="200">Pedido encontrado</response>
+    /// <response code="404">Pedido não encontrado</response>
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrderById(Guid id)
     {
         var result = await _getOrderByIdHandler.HandleAsync(new GetOrderByIdQuery(id));
@@ -63,7 +94,17 @@ public class OrdersController : ControllerBase
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Atualiza o status de um pedido
+    /// </summary>
+    /// <param name="id">ID do pedido</param>
+    /// <param name="request">Novo status (Pending, Confirmed, Processing, Completed, Cancelled)</param>
+    /// <returns>Pedido com status atualizado</returns>
+    /// <response code="200">Status atualizado com sucesso</response>
+    /// <response code="400">Status inválido ou transição não permitida</response>
     [HttpPut("{id}/status")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateStatusRequest request)
     {
         if (!Enum.TryParse<OrderStatus>(request.NewStatus, true, out var newStatus))
@@ -78,7 +119,16 @@ public class OrdersController : ControllerBase
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Cancela um pedido
+    /// </summary>
+    /// <param name="id">ID do pedido a ser cancelado</param>
+    /// <returns>Sem conteúdo</returns>
+    /// <response code="204">Pedido cancelado com sucesso</response>
+    /// <response code="400">Pedido não pode ser cancelado</response>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CancelOrder(Guid id)
     {
         var result = await _cancelOrderHandler.HandleAsync(new CancelOrderCommand(id));
@@ -89,5 +139,3 @@ public class OrdersController : ControllerBase
         return NoContent();
     }
 }
-
-public record UpdateStatusRequest(string NewStatus);

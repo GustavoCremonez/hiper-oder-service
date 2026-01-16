@@ -1,3 +1,4 @@
+using System.Reflection;
 using Hiper.API.Middlewares;
 using Hiper.Application.UseCases.CancelOrder;
 using Hiper.Application.UseCases.CreateOrder;
@@ -7,12 +8,30 @@ using Hiper.Application.UseCases.UpdateOrderStatus;
 using Hiper.Infrastructure.Data;
 using Hiper.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Hiper Order System API",
+        Version = "v1",
+        Description = "API para gerenciamento de pedidos com arquitetura limpa e mensageria assíncrona",
+        Contact = new OpenApiContact
+        {
+            Name = "Hiper Software SA",
+            Email = "contato@hiper.com"
+        }
+    });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+});
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
