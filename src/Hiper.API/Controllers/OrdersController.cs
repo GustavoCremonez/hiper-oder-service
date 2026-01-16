@@ -46,10 +46,10 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders()
+    public async Task<IActionResult> GetOrders([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var orders = await _getOrdersHandler.HandleAsync(new GetOrdersQuery());
-        return Ok(orders);
+        var result = await _getOrdersHandler.HandleAsync(new GetOrdersQuery(page, pageSize));
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
