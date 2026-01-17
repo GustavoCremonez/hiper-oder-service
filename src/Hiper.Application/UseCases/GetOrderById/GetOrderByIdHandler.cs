@@ -1,6 +1,7 @@
 using Hiper.Application.DTOs;
 using Hiper.Application.Mappings;
 using Hiper.Domain.Common;
+using Hiper.Domain.Exceptions;
 using Hiper.Domain.Interfaces;
 
 namespace Hiper.Application.UseCases.GetOrderById;
@@ -19,7 +20,7 @@ public class GetOrderByIdHandler
         var order = await _orderRepository.GetByIdAsync(query.Id);
 
         if (order == null)
-            return Result<OrderDto>.Failure("Pedido não encontrado");
+            throw new NotFoundException("Pedido", query.Id.ToString());
 
         return Result<OrderDto>.Success(order.ToDto());
     }
