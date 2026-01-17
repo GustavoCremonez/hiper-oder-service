@@ -165,14 +165,11 @@ Regras de negócio ficam encapsuladas nas entidades, não nos controllers ou han
 
 ## Melhorias Futuras
 
-- [ ] Testes de integração com Testcontainers
 - [ ] Logging estruturado com Serilog
 - [ ] Health checks para monitoramento
 - [ ] API versioning
-- [ ] Paginação na listagem de pedidos
 - [ ] Filtros e ordenação
 - [ ] Autenticação e autorização
-- [ ] Validações avançadas com FluentValidation
 - [ ] CI/CD com GitHub Actions
 
 ## Autor
