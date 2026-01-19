@@ -23,25 +23,23 @@ public class Order
 
     public static Result<Order> Create(string customerName, string customerEmail, List<OrderItem> items)
     {
-        var errors = new Dictionary<string, string[]>();
-
         if (string.IsNullOrWhiteSpace(customerName))
-            errors["customerName"] = new[] { "Nome do cliente é obrigatório" };
-        else if (customerName.Trim().Length < 3)
-            errors["customerName"] = new[] { "Nome do cliente deve ter pelo menos 3 caracteres" };
-        else if (customerName.Trim().Length > 100)
-            errors["customerName"] = new[] { "Nome do cliente não pode exceder 100 caracteres" };
+            return Result<Order>.Failure("Nome do cliente é obrigatório");
+
+        if (customerName.Trim().Length < 3)
+            return Result<Order>.Failure("Nome do cliente deve ter pelo menos 3 caracteres");
+
+        if (customerName.Trim().Length > 100)
+            return Result<Order>.Failure("Nome do cliente não pode exceder 100 caracteres");
 
         if (string.IsNullOrWhiteSpace(customerEmail))
-            errors["customerEmail"] = new[] { "Email do cliente é obrigatório" };
-        else if (!IsValidEmail(customerEmail))
-            errors["customerEmail"] = new[] { "Email do cliente é inválido" };
+            return Result<Order>.Failure("Email do cliente é obrigatório");
+
+        if (!IsValidEmail(customerEmail))
+            return Result<Order>.Failure("Email do cliente é inválido");
 
         if (items == null || items.Count == 0)
-            errors["items"] = new[] { "Pedido deve conter pelo menos um item" };
-
-        if (errors.Any())
-            return Result<Order>.Failure("Erros de validação detectados");
+            return Result<Order>.Failure("Pedido deve conter pelo menos um item");
 
         return Result<Order>.Success(new Order
         {
@@ -58,9 +56,8 @@ public class Order
     {
         if (!IsValidTransition(Status, newStatus))
         {
-            throw new BusinessRuleException(
-                $"Não é possível alterar o status de '{Status}' para '{newStatus}'. " +
-                $"Transição inválida conforme as regras de negócio."
+            return Result.Failure(
+                $"A transição de status de '{Status}' para '{newStatus}' não é permitida"
             );
         }
 
