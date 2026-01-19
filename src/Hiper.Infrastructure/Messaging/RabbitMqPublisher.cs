@@ -25,7 +25,7 @@ public class RabbitMqPublisher : IMessagePublisher, IDisposable
         var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
         _channel!.BasicPublish(
-            exchange: "hiper.orders",
+            exchange: RabbitMqConstants.OrdersExchange,
             routingKey: routingKey,
             basicProperties: null,
             body: body
@@ -56,7 +56,7 @@ public class RabbitMqPublisher : IMessagePublisher, IDisposable
             _channel = _connection.CreateModel();
 
             _channel.ExchangeDeclare(
-                exchange: "hiper.orders",
+                exchange: RabbitMqConstants.OrdersExchange,
                 type: ExchangeType.Topic,
                 durable: true,
                 autoDelete: false

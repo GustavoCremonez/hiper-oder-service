@@ -17,14 +17,33 @@ public class OrderRepository : IOrderRepository
     public async Task<List<Order>> GetAllAsync()
     {
         return await _context.Orders
+            .AsNoTracking()
             .Include(o => o.Items)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
 
+    public async Task<(List<Order> Orders, int TotalCount)> GetPagedAsync(int page, int pageSize)
+    {
+        var query = _context.Orders
+            .AsNoTracking()
+            .Include(o => o.Items);
+
+        var totalCount = await query.CountAsync();
+
+        var orders = await query
+            .OrderByDescending(o => o.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (orders, totalCount);
+    }
+
     public async Task<Order?> GetByIdAsync(Guid id)
     {
         return await _context.Orders
+            .AsNoTracking()
             .Include(o => o.Items)
             .FirstOrDefaultAsync(o => o.Id == id);
     }

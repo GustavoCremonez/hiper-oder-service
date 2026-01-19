@@ -41,7 +41,7 @@ public class Order
             errors["items"] = new[] { "Pedido deve conter pelo menos um item" };
 
         if (errors.Any())
-            throw new ValidationException(errors);
+            return Result<Order>.Failure("Erros de validação detectados");
 
         return Result<Order>.Success(new Order
         {
@@ -58,17 +58,8 @@ public class Order
     {
         if (!IsValidTransition(Status, newStatus))
         {
-            var statusMessages = new Dictionary<OrderStatus, string>
-            {
-                { OrderStatus.Pending, "Pendente" },
-                { OrderStatus.Confirmed, "Confirmado" },
-                { OrderStatus.Processing, "Processando" },
-                { OrderStatus.Completed, "Concluído" },
-                { OrderStatus.Cancelled, "Cancelado" }
-            };
-
             throw new BusinessRuleException(
-                $"Não é possível alterar o status de '{statusMessages[Status]}' para '{statusMessages[newStatus]}'. " +
+                $"Não é possível alterar o status de '{Status}' para '{newStatus}'. " +
                 $"Transição inválida conforme as regras de negócio."
             );
         }

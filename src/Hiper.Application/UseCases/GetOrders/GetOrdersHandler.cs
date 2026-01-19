@@ -15,19 +15,15 @@ public class GetOrdersHandler
 
     public async Task<PagedResult<OrderDto>> HandleAsync(GetOrdersQuery query)
     {
-        var allOrders = await _orderRepository.GetAllAsync();
-        var totalCount = allOrders.Count;
+        var (orders, totalCount) = await _orderRepository.GetPagedAsync(query.Page, query.PageSize);
 
-        var orders = allOrders
-            .OrderByDescending(o => o.CreatedAt)
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
+        var orderDtos = orders
             .Select(o => o.ToDto())
             .ToList();
 
         return new PagedResult<OrderDto>
         {
-            Items = orders,
+            Items = orderDtos,
             TotalCount = totalCount,
             Page = query.Page,
             PageSize = query.PageSize,
