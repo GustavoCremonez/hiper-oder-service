@@ -2,7 +2,6 @@ using Hiper.Application.Interfaces;
 using Hiper.Domain.Common;
 using Hiper.Domain.Entities;
 using Hiper.Domain.Interfaces;
-using Hiper.Infrastructure.Messaging;
 
 namespace Hiper.Application.UseCases.CreateOrder;
 
@@ -47,10 +46,6 @@ public class CreateOrderHandler
         var order = orderResult.Value;
         await _orderRepository.AddAsync(order);
 
-        // TODO: Implementar Outbox Pattern para garantir consistência eventual entre persistência e publicação de eventos.
-        // Atualmente, há risco de perda de eventos caso a publicação falhe após a persistência no banco de dados.
-        // O Outbox Pattern armazena eventos na mesma transação do agregado e um processo separado publica os eventos,
-        // garantindo que nenhum evento seja perdido mesmo em caso de falha na comunicação com o message broker.
         var orderCreatedEvent = new OrderCreatedEvent(
             order.Id,
             order.CustomerName,
@@ -59,7 +54,7 @@ public class CreateOrderHandler
             order.CreatedAt
         );
 
-        await _messagePublisher.PublishAsync(orderCreatedEvent, RabbitMqConstants.RoutingKeys.OrderCreated);
+        await _messagePublisher.PublishAsync(orderCreatedEvent, "order.created");
 
         return Result<Guid>.Success(order.Id);
     }
